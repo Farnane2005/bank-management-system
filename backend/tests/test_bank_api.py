@@ -14,9 +14,9 @@ def test_home():
 
     assert response.status_code == 200
 
-    assert response.json() == {
-        "message": "Bank API Running"
-    }
+    # Root now serves the frontend HTML page
+    assert "text/html" in response.headers.get("content-type", "")
+    assert b"BankOS" in response.content
 
 # ==================================================
 # TEST REGISTER

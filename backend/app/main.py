@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 
 from app.database import (
     engine,
@@ -44,15 +47,19 @@ app = FastAPI(
 )
 
 # ==================================================
-# ROOT ENDPOINT
+# STATIC FILES
 # ==================================================
 
-@app.get("/")
-def home():
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
-    return {
-        "message": "Bank API Running"
-    }
+# ==================================================
+# ROOT ENDPOINT — Serve Frontend
+# ==================================================
+
+@app.get("/", include_in_schema=False)
+def home():
+    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
 # ==================================================
 # INCLUDE ROUTES
@@ -62,4 +69,4 @@ app.include_router(auth_router)
 
 app.include_router(client_router)
 
-app.include_router(transaction_router)
+app.include_router(transaction_router)

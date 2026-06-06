@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: bank-management-system
+    runtime: python
+    # We specify the build command to install the required backend dependencies
+    buildCommand: pip install -r backend/app/requirements.txt
+    # We run the uvicorn server on the port provided by Render
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DATABASE_URL
+        # In a real environment, you might override this with PostgreSQL or a persistent disk path
+        value: sqlite:///./bank.db

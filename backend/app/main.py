@@ -51,7 +51,10 @@ app = FastAPI(
 # ==================================================
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+if not os.path.exists(STATIC_DIR):
+    raise RuntimeError(f"Static directory not found: {STATIC_DIR}")
 
 # ==================================================
 # ROOT ENDPOINT — Serve Frontend
@@ -69,4 +72,4 @@ app.include_router(auth_router)
 
 app.include_router(client_router)
 
-app.include_router(transaction_router)
+app.include_router(transaction_router)

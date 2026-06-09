@@ -3,47 +3,20 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
 
-from app.database import (
-    engine,
-    Base
-)
-
-# IMPORT MODELS
+from app.database import engine, Base
 from app.models.client_model import Client
-from app.models.transaction_model import (
-    Transaction
-)
+from app.models.transaction_model import Transaction
 from app.models.user_model import User
-
-# IMPORT ROUTES
-from app.routes.client_routes import (
-    router as client_router
-)
-
-from app.routes.transaction_routes import (
-    router as transaction_router
-)
-
-from app.routes.auth_routes import (
-    router as auth_router
-)
-
-# ==================================================
-# CREATE DATABASE TABLES
-# ==================================================
+from app.routes.client_routes import router as client_router
+from app.routes.transaction_routes import router as transaction_router
+from app.routes.auth_routes import router as auth_router
 
 Base.metadata.create_all(bind=engine)
-
-# ==================================================
-# FASTAPI APP
-# ==================================================
 
 app = FastAPI(
     title="Bank Management System API",
     version="1.0.0",
-    description="""
-    Simple banking API using FastAPI
-    """
+    description="Simple banking API using FastAPI"
 )
 
 # ==================================================
@@ -52,12 +25,15 @@ app = FastAPI(
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 
+print(f"__file__     = {__file__}")
+print(f"STATIC_DIR   = {STATIC_DIR}")
+print(f"Exists       = {os.path.exists(STATIC_DIR)}")
+print(f"Contents     = {os.listdir(STATIC_DIR) if os.path.exists(STATIC_DIR) else 'NOT FOUND'}")
 
-if not os.path.exists(STATIC_DIR):
-    raise RuntimeError(f"Static directory not found: {STATIC_DIR}")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # ==================================================
-# ROOT ENDPOINT — Serve Frontend
+# ROOT ENDPOINT
 # ==================================================
 
 @app.get("/", include_in_schema=False)
@@ -69,7 +45,5 @@ def home():
 # ==================================================
 
 app.include_router(auth_router)
-
 app.include_router(client_router)
-
 app.include_router(transaction_router)
